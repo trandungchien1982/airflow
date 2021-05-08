@@ -13,9 +13,9 @@ args = {
 }
 
 dag = DAG(
-    dag_id='the_first_dag',
+    dag_id='the_second_dag',
     default_args=args,
-    schedule_interval='*/3 * * * *',
+    schedule_interval='*/5 * * * *',
     dagrun_timeout=timedelta(minutes=60),
 )
 
@@ -40,6 +40,15 @@ first_task = BashOperator(
     dag=dag,
 )
 first_task >> run_this
+
+# [START howto_operator_bash_template]
+also_run_this = BashOperator(
+    task_id='also_run_this',
+    bash_command='echo "run_id={{ run_id }} | dag_run={{ dag_run }}"',
+    dag=dag,
+)
+# [END howto_operator_bash_template]
+also_run_this >> run_this_last
 
 if __name__ == "__main__":
     dag.cli()
